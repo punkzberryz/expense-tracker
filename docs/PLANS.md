@@ -24,13 +24,12 @@
 ### Todo
 
 - MVP insights
-  - Implement category breakdown and monthly summary views.
+  - Implement category breakdown view.
   - Validate chart data accuracy against the sheet.
 - Insight rules
   - Add top categories and monthly total spend insights.
   - Define any anomaly/delta rules if needed later.
 - [ ] Implement category breakdown view.
-- [ ] Implement monthly summary view.
 - [ ] Add insight cards for top categories and monthly total spend.
 
 ### Done
@@ -40,6 +39,7 @@
   - Confirmed category/type mapping and required fields.
 - MVP insights
   - Implemented trend line view.
+  - Implemented monthly summary view.
 
 ## Backlog (optional)
 
