@@ -38,6 +38,8 @@ export type ExpenseQuery = {
 	year?: string | number;
 };
 
+type SheetMetadata = { properties?: { title?: string | null } | null };
+
 const getSheetId = () => {
 	const sheetId = process.env.GOOGLE_SHEET_ID;
 	if (!sheetId) throw new Error("Missing GOOGLE_SHEET_ID.");
@@ -73,6 +75,8 @@ const normalizeYear = (year?: string | number) => {
 	}
 	return value;
 };
+
+const isYearSheet = (value: string) => /^\d{4}$/.test(value);
 
 const normalizeCell = (value: unknown) =>
 	typeof value === "string" ? value.trim() : String(value ?? "").trim();
@@ -145,8 +149,34 @@ async function fetchExpenseRows(targetYear: string): Promise<ExpenseRow[]> {
 		.filter((row): row is ExpenseRow => row !== null);
 }
 
+async function fetchAvailableYears(): Promise<string[]> {
+	const auth = getGoogleSheetsAuth();
+	const sheets = google.sheets({
+		version: "v4",
+		auth,
+	});
+	const sheetId = getSheetId();
+	const metadata = await sheets.spreadsheets.get({
+		spreadsheetId: sheetId,
+		fields: "sheets(properties(title))",
+	});
+	const titles = (metadata.data.sheets ?? [])
+		.map((sheet: SheetMetadata) => sheet.properties?.title)
+		.filter((title): title is string => typeof title === "string")
+		.map((title) => title.trim())
+		.filter((title) => title.length > 0);
+	const years = Array.from(
+		new Set(titles.filter((title) => isYearSheet(title))),
+	);
+	return years.sort((a, b) => Number(b) - Number(a));
+}
+
 export const getExpenseRows = createServerFn({ method: "GET" })
 	.inputValidator((input: ExpenseQuery | undefined) => ({
 		year: normalizeYear(input?.year),
 	}))
 	.handler(async ({ data }) => fetchExpenseRows(data.year));
+
+export const getAvailableYears = createServerFn({ method: "GET" }).handler(
+	async () => fetchAvailableYears(),
+);
