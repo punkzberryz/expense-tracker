@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ExpenseIndexRouteImport } from './routes/expense/index'
 import { Route as ExpenseYearRouteImport } from './routes/expense/$year'
 import { Route as InsightsTrendLineYearRouteImport } from './routes/insights/trend-line/$year'
+import { Route as InsightsMonthlySummaryYearRouteImport } from './routes/insights/monthly-summary/$year'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,17 +35,25 @@ const InsightsTrendLineYearRoute = InsightsTrendLineYearRouteImport.update({
   path: '/insights/trend-line/$year',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InsightsMonthlySummaryYearRoute =
+  InsightsMonthlySummaryYearRouteImport.update({
+    id: '/insights/monthly-summary/$year',
+    path: '/insights/monthly-summary/$year',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/expense/$year': typeof ExpenseYearRoute
   '/expense/': typeof ExpenseIndexRoute
+  '/insights/monthly-summary/$year': typeof InsightsMonthlySummaryYearRoute
   '/insights/trend-line/$year': typeof InsightsTrendLineYearRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/expense/$year': typeof ExpenseYearRoute
   '/expense': typeof ExpenseIndexRoute
+  '/insights/monthly-summary/$year': typeof InsightsMonthlySummaryYearRoute
   '/insights/trend-line/$year': typeof InsightsTrendLineYearRoute
 }
 export interface FileRoutesById {
@@ -52,18 +61,30 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/expense/$year': typeof ExpenseYearRoute
   '/expense/': typeof ExpenseIndexRoute
+  '/insights/monthly-summary/$year': typeof InsightsMonthlySummaryYearRoute
   '/insights/trend-line/$year': typeof InsightsTrendLineYearRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/expense/$year' | '/expense/' | '/insights/trend-line/$year'
+  fullPaths:
+    | '/'
+    | '/expense/$year'
+    | '/expense/'
+    | '/insights/monthly-summary/$year'
+    | '/insights/trend-line/$year'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/expense/$year' | '/expense' | '/insights/trend-line/$year'
+  to:
+    | '/'
+    | '/expense/$year'
+    | '/expense'
+    | '/insights/monthly-summary/$year'
+    | '/insights/trend-line/$year'
   id:
     | '__root__'
     | '/'
     | '/expense/$year'
     | '/expense/'
+    | '/insights/monthly-summary/$year'
     | '/insights/trend-line/$year'
   fileRoutesById: FileRoutesById
 }
@@ -71,6 +92,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ExpenseYearRoute: typeof ExpenseYearRoute
   ExpenseIndexRoute: typeof ExpenseIndexRoute
+  InsightsMonthlySummaryYearRoute: typeof InsightsMonthlySummaryYearRoute
   InsightsTrendLineYearRoute: typeof InsightsTrendLineYearRoute
 }
 
@@ -104,6 +126,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InsightsTrendLineYearRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/insights/monthly-summary/$year': {
+      id: '/insights/monthly-summary/$year'
+      path: '/insights/monthly-summary/$year'
+      fullPath: '/insights/monthly-summary/$year'
+      preLoaderRoute: typeof InsightsMonthlySummaryYearRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -111,6 +140,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExpenseYearRoute: ExpenseYearRoute,
   ExpenseIndexRoute: ExpenseIndexRoute,
+  InsightsMonthlySummaryYearRoute: InsightsMonthlySummaryYearRoute,
   InsightsTrendLineYearRoute: InsightsTrendLineYearRoute,
 }
 export const routeTree = rootRouteImport

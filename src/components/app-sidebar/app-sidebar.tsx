@@ -1,5 +1,10 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ChartLineIcon, LayoutGridIcon, ReceiptIcon } from "lucide-react";
+import {
+	BarChart3Icon,
+	ChartLineIcon,
+	LayoutGridIcon,
+	ReceiptIcon,
+} from "lucide-react";
 
 import {
 	Sidebar,
@@ -22,7 +27,8 @@ export function AppSidebar() {
 	const currentYear = new Date().getFullYear().toString();
 	const isOverviewActive = pathname === "/";
 	const isExpenseActive = pathname.startsWith("/expense");
-	const isInsightsActive = pathname.startsWith("/insights");
+	const isTrendLineActive = pathname.startsWith("/insights/trend-line");
+	const isMonthlySummaryActive = pathname.startsWith("/insights/monthly-summary");
 
 	return (
 		<Sidebar variant="inset" collapsible="offcanvas">
@@ -70,13 +76,24 @@ export function AppSidebar() {
 								</SidebarMenuButton>
 							</SidebarMenuItem>
 							<SidebarMenuItem>
-								<SidebarMenuButton asChild isActive={isInsightsActive}>
+								<SidebarMenuButton asChild isActive={isTrendLineActive}>
 									<Link
 										to="/insights/trend-line/$year"
 										params={{ year: currentYear }}
 									>
 										<ChartLineIcon />
 										<span>Trend line</span>
+									</Link>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
+							<SidebarMenuItem>
+								<SidebarMenuButton asChild isActive={isMonthlySummaryActive}>
+									<Link
+										to="/insights/monthly-summary/$year"
+										params={{ year: currentYear }}
+									>
+										<BarChart3Icon />
+										<span>Monthly summary</span>
 									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
@@ -109,6 +126,22 @@ export function AppSidebar() {
 									>
 										<ChartLineIcon />
 										<span>Trend line {currentYear}</span>
+									</Link>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
+							<SidebarMenuItem>
+								<SidebarMenuButton
+									asChild
+									isActive={
+										pathname === `/insights/monthly-summary/${currentYear}`
+									}
+								>
+									<Link
+										to="/insights/monthly-summary/$year"
+										params={{ year: currentYear }}
+									>
+										<BarChart3Icon />
+										<span>Monthly summary {currentYear}</span>
 									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>

@@ -19,6 +19,7 @@ const segmentLabels: Record<string, string> = {
 	expense: "Expenses",
 	insights: "Insights",
 	"trend-line": "Trend line",
+	"monthly-summary": "Monthly summary",
 };
 
 function formatSegmentLabel(segment: string) {

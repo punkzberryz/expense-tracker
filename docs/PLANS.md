@@ -19,6 +19,28 @@
 - [x] Which insight rules matter most (anomalies, biggest deltas, top categories)?
   - Insight rules: top categories and monthly total spend (to judge tightening spending).
 
+## Roadmap
+
+### Todo
+
+- MVP insights
+  - Implement category breakdown and monthly summary views.
+  - Validate chart data accuracy against the sheet.
+- Insight rules
+  - Add top categories and monthly total spend insights.
+  - Define any anomaly/delta rules if needed later.
+- [ ] Implement category breakdown view.
+- [ ] Implement monthly summary view.
+- [ ] Add insight cards for top categories and monthly total spend.
+
+### Done
+
+- Data foundation
+  - Verified Google Sheet columns and parsing rules.
+  - Confirmed category/type mapping and required fields.
+- MVP insights
+  - Implemented trend line view.
+
 ## Backlog (optional)
 
 - [ ] (empty)
