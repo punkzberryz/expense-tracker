@@ -107,9 +107,7 @@ const parseHeaderRow = (row: unknown[]) => {
 };
 
 const parseExpenseRow = (row: unknown[]): ExpenseRow | null => {
-	const isEmpty = row.every(
-		(cell) => normalizeCell(cell).length === 0,
-	);
+	const isEmpty = row.every((cell) => normalizeCell(cell).length === 0);
 	if (isEmpty) return null;
 
 	const category = normalizeCell(row[2]);

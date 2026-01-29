@@ -18,9 +18,7 @@ function RouteComponent() {
 			<div className="mb-4 flex items-center justify-between">
 				<div>
 					<h1 className="text-2xl font-semibold">Trend line · {year}</h1>
-					<p className="mt-1 text-sm text-slate-600">
-						Monthly spend trend.
-					</p>
+					<p className="mt-1 text-sm text-slate-600">Monthly spend trend.</p>
 				</div>
 				<Link
 					to="/expense/$year"

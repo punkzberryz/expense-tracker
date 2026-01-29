@@ -6,6 +6,7 @@
 - Follow existing patterns and conventions in nearby files.
 - Keep changes small and reviewable when possible.
 - Run lint after big code changes.
+- Run Biome auto-format before running lint (`pnpm exec biome format --write .`).
 - Update `docs/PLANS.md` when scope, priorities, or roadmap items change.
 - Write useful, relevant commit messages.
 

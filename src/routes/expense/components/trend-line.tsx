@@ -77,59 +77,58 @@ export function TrendLine({ rows, year }: TrendLineProps) {
 		monthlyChartData,
 		dailyChartData,
 		dailyRowsByDate,
-	} =
-		useMemo(() => {
-			const monthlyTotals = Array.from({ length: 12 }, () => 0);
-			const dailyTotals = new Map<string, number>();
-			const dailyRowsByDate = new Map<string, ExpenseRow[]>();
-			for (const row of rows) {
-				const parsed = parseYearMonth(row.date);
-				if (parsed && parsed.year === year) {
-					monthlyTotals[parsed.monthIndex] += row.amount;
-				}
-				const dayParsed = parseYearDay(row.date);
-				if (dayParsed && dayParsed.year === year) {
-					const dateKey = row.date;
-					dailyTotals.set(dateKey, (dailyTotals.get(dateKey) ?? 0) + row.amount);
-					const existing = dailyRowsByDate.get(dateKey);
-					if (existing) {
-						existing.push(row);
-					} else {
-						dailyRowsByDate.set(dateKey, [row]);
-					}
+	} = useMemo(() => {
+		const monthlyTotals = Array.from({ length: 12 }, () => 0);
+		const dailyTotals = new Map<string, number>();
+		const dailyRowsByDate = new Map<string, ExpenseRow[]>();
+		for (const row of rows) {
+			const parsed = parseYearMonth(row.date);
+			if (parsed && parsed.year === year) {
+				monthlyTotals[parsed.monthIndex] += row.amount;
+			}
+			const dayParsed = parseYearDay(row.date);
+			if (dayParsed && dayParsed.year === year) {
+				const dateKey = row.date;
+				dailyTotals.set(dateKey, (dailyTotals.get(dateKey) ?? 0) + row.amount);
+				const existing = dailyRowsByDate.get(dateKey);
+				if (existing) {
+					existing.push(row);
+				} else {
+					dailyRowsByDate.set(dateKey, [row]);
 				}
 			}
-			const totalSpend = monthlyTotals.reduce((sum, value) => sum + value, 0);
-			const peakMonthIndex = totalSpend
-				? monthlyTotals.indexOf(Math.max(...monthlyTotals))
-				: -1;
-			const monthlyChartData = monthlyTotals.map((value, index) => ({
-				month: MONTH_LABELS[index],
-				spend: Number(value.toFixed(2)),
-			}));
-			const dailyChartData = Array.from(dailyTotals.entries())
-				.sort(([a], [b]) => a.localeCompare(b))
-				.reduce<{ date: string; daily: number; cumulative: number }[]>(
-					(acc, [date, daily]) => {
-						const previous = acc[acc.length - 1]?.cumulative ?? 0;
-						acc.push({
-							date,
-							daily: Number(daily.toFixed(2)),
-							cumulative: Number((previous + daily).toFixed(2)),
-						});
-						return acc;
-					},
-					[],
-				);
-			return {
-				monthlyTotals,
-				totalSpend,
-				peakMonthIndex,
-				monthlyChartData,
-				dailyChartData,
-				dailyRowsByDate,
-			};
-		}, [rows, year]);
+		}
+		const totalSpend = monthlyTotals.reduce((sum, value) => sum + value, 0);
+		const peakMonthIndex = totalSpend
+			? monthlyTotals.indexOf(Math.max(...monthlyTotals))
+			: -1;
+		const monthlyChartData = monthlyTotals.map((value, index) => ({
+			month: MONTH_LABELS[index],
+			spend: Number(value.toFixed(2)),
+		}));
+		const dailyChartData = Array.from(dailyTotals.entries())
+			.sort(([a], [b]) => a.localeCompare(b))
+			.reduce<{ date: string; daily: number; cumulative: number }[]>(
+				(acc, [date, daily]) => {
+					const previous = acc[acc.length - 1]?.cumulative ?? 0;
+					acc.push({
+						date,
+						daily: Number(daily.toFixed(2)),
+						cumulative: Number((previous + daily).toFixed(2)),
+					});
+					return acc;
+				},
+				[],
+			);
+		return {
+			monthlyTotals,
+			totalSpend,
+			peakMonthIndex,
+			monthlyChartData,
+			dailyChartData,
+			dailyRowsByDate,
+		};
+	}, [rows, year]);
 
 	if (totalSpend <= 0) {
 		return (
@@ -154,9 +153,7 @@ export function TrendLine({ rows, year }: TrendLineProps) {
 			<div className="flex flex-wrap items-start justify-between gap-4">
 				<div>
 					<h2 className="text-lg font-semibold text-slate-900">Trend line</h2>
-					<p className="text-sm text-slate-500">
-						Monthly spend across {year}.
-					</p>
+					<p className="text-sm text-slate-500">Monthly spend across {year}.</p>
 				</div>
 				<div className="text-right text-sm text-slate-600">
 					<div>Total: {formatCurrency(totalSpend)}</div>
@@ -191,9 +188,7 @@ export function TrendLine({ rows, year }: TrendLineProps) {
 							content={
 								<ChartTooltipContent
 									indicator="line"
-									formatter={(value) =>
-										formatCurrency(Number(value))
-									}
+									formatter={(value) => formatCurrency(Number(value))}
 								/>
 							}
 						/>
@@ -267,7 +262,7 @@ export function TrendLine({ rows, year }: TrendLineProps) {
 				</div>
 				<DailyPurchasePanel
 					date={hoveredDate}
-					rows={hoveredDate ? dailyRowsByDate.get(hoveredDate) ?? [] : []}
+					rows={hoveredDate ? (dailyRowsByDate.get(hoveredDate) ?? []) : []}
 				/>
 			</div>
 		</div>
@@ -307,7 +302,9 @@ const DailyPurchasePanel = ({
 
 	return (
 		<div className="mt-3 rounded-md border border-slate-200 bg-white p-3 text-xs text-slate-600">
-			<div className="font-semibold text-slate-900">{formatShortDate(date)}</div>
+			<div className="font-semibold text-slate-900">
+				{formatShortDate(date)}
+			</div>
 			{rows.length === 0 ? (
 				<div className="mt-2 text-slate-500">No purchases recorded.</div>
 			) : (
@@ -321,9 +318,7 @@ const DailyPurchasePanel = ({
 								{row.name}
 								{row.category ? ` · ${row.category}` : ""}
 							</div>
-							<div className="font-medium">
-								{formatCurrency(row.amount)}
-							</div>
+							<div className="font-medium">{formatCurrency(row.amount)}</div>
 						</div>
 					))}
 				</div>

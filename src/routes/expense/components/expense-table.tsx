@@ -38,12 +38,7 @@ declare module "@tanstack/react-table" {
 	}
 }
 
-const fuzzyFilter: FilterFn<ExpenseRow> = (
-	row,
-	columnId,
-	value,
-	addMeta,
-) => {
+const fuzzyFilter: FilterFn<ExpenseRow> = (row, columnId, value, addMeta) => {
 	const itemRank = rankItem(String(row.getValue(columnId)), value);
 	addMeta({ itemRank });
 	return itemRank.passed;
@@ -96,9 +91,7 @@ export function ExpenseTable({ rows }: ExpenseTableProps) {
 				accessorKey: "amount",
 				header: () => <div className="text-right">Amount</div>,
 				cell: ({ getValue }) => (
-					<div className="text-right">
-						{formatCurrency(getValue<number>())}
-					</div>
+					<div className="text-right">{formatCurrency(getValue<number>())}</div>
 				),
 			},
 			{
@@ -217,7 +210,10 @@ export function ExpenseTable({ rows }: ExpenseTableProps) {
 							))
 						) : (
 							<TableRow>
-								<TableCell colSpan={columns.length} className="h-24 text-center">
+								<TableCell
+									colSpan={columns.length}
+									className="h-24 text-center"
+								>
 									No expenses found for this year.
 								</TableCell>
 							</TableRow>

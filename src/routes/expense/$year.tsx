@@ -17,10 +17,7 @@ function RouteComponent() {
 		<div className="p-6">
 			<div className="mb-4 flex items-center justify-between">
 				<h1 className="text-2xl font-semibold">Expenses · {year}</h1>
-				<Link
-					to="/expense"
-					className="text-sm text-blue-600 hover:underline"
-				>
+				<Link to="/expense" className="text-sm text-blue-600 hover:underline">
 					Change year
 				</Link>
 			</div>

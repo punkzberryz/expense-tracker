@@ -3,4 +3,5 @@ const currencyFormatter = new Intl.NumberFormat("en-US", {
 	currency: "USD",
 });
 
-export const formatCurrency = (amount: number) => currencyFormatter.format(amount);
+export const formatCurrency = (amount: number) =>
+	currencyFormatter.format(amount);

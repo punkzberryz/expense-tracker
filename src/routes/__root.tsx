@@ -1,4 +1,8 @@
-import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
+import {
+	HeadContent,
+	Scripts,
+	createRootRouteWithContext,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { ToastContainer } from "react-toastify";
 import { TanStackDevtools } from "@tanstack/react-devtools";
@@ -8,69 +12,78 @@ import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
 
 import type { QueryClient } from "@tanstack/react-query";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar/app-sidebar";
+import { AppSidebarHeader } from "@/components/app-sidebar/app-sidebar-header";
 
 interface MyRouterContext {
-  queryClient: QueryClient;
+	queryClient: QueryClient;
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
-  head: () => ({
-    meta: [
-      {
-        charSet: "utf-8",
-      },
-      {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1",
-      },
-      {
-        title: "TanStack Start Starter",
-      },
-    ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-    ],
-  }),
+	head: () => ({
+		meta: [
+			{
+				charSet: "utf-8",
+			},
+			{
+				name: "viewport",
+				content: "width=device-width, initial-scale=1",
+			},
+			{
+				title: "TanStack Start Starter",
+			},
+		],
+		links: [
+			{
+				rel: "stylesheet",
+				href: appCss,
+			},
+		],
+	}),
 
-  shellComponent: RootDocument,
+	shellComponent: RootDocument,
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        {children}
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-        />
-        <TanStackDevtools
-          config={{
-            position: "bottom-right",
-          }}
-          plugins={[
-            {
-              name: "Tanstack Router",
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-            TanStackQueryDevtools,
-          ]}
-        />
-        <Scripts />
-      </body>
-    </html>
-  );
+	return (
+		<html lang="en">
+			<head>
+				<HeadContent />
+			</head>
+			<body>
+				<SidebarProvider>
+					<AppSidebar />
+					<SidebarInset>
+						<AppSidebarHeader />
+						{children}
+					</SidebarInset>
+				</SidebarProvider>
+				<ToastContainer
+					position="top-right"
+					autoClose={3000}
+					hideProgressBar={false}
+					newestOnTop
+					closeOnClick
+					pauseOnFocusLoss
+					draggable
+					pauseOnHover
+					theme="light"
+				/>
+				<TanStackDevtools
+					config={{
+						position: "bottom-right",
+					}}
+					plugins={[
+						{
+							name: "Tanstack Router",
+							render: <TanStackRouterDevtoolsPanel />,
+						},
+						TanStackQueryDevtools,
+					]}
+				/>
+				<Scripts />
+			</body>
+		</html>
+	);
 }
