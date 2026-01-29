@@ -14,8 +14,10 @@
   - Columns: `Date`, `Name`, `Category`, `Type`, `Amount`, `Description`.
   - `Category` values map to the app’s expense categories.
   - `Type` is set to `EXPENSE` by the logging app.
-- [ ] What are the MVP charts (trend line, category breakdown, monthly summary, top merchants)?
-- [ ] Which insight rules matter most (anomalies, biggest deltas, top categories)?
+- [x] What are the MVP charts (trend line, category breakdown, monthly summary, top merchants)?
+  - MVP charts: trend line, category breakdown, monthly summary.
+- [x] Which insight rules matter most (anomalies, biggest deltas, top categories)?
+  - Insight rules: top categories and monthly total spend (to judge tightening spending).
 
 ## Backlog (optional)
 

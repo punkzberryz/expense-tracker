@@ -81,6 +81,19 @@ const isYearSheet = (value: string) => /^\d{4}$/.test(value);
 const normalizeCell = (value: unknown) =>
 	typeof value === "string" ? value.trim() : String(value ?? "").trim();
 
+const parseDateCell = (value: unknown) => {
+	const raw = normalizeCell(value);
+	if (!raw) return raw;
+	const withoutTime = raw.split(",")[0]?.trim() ?? raw;
+	if (/^\d{4}-\d{2}-\d{2}$/.test(withoutTime)) {
+		return withoutTime;
+	}
+	const match = withoutTime.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+	if (!match) return withoutTime;
+	const [, month, day, year] = match;
+	return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+};
+
 const parseHeaderRow = (row: unknown[]) => {
 	const normalized = row.map(normalizeCell);
 	const matches = EXPENSE_HEADERS.every(
@@ -106,7 +119,7 @@ const parseExpenseRow = (row: unknown[]): ExpenseRow | null => {
 	if (Number.isNaN(amount) || amount <= 0) return null;
 
 	return {
-		date: normalizeCell(row[0]),
+		date: parseDateCell(row[0]),
 		name: normalizeCell(row[1]),
 		category,
 		type: normalizeCell(row[3]),
