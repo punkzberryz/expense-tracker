@@ -3,6 +3,7 @@ import {
 	BarChart3Icon,
 	ChartLineIcon,
 	LayoutGridIcon,
+	PieChartIcon,
 	ReceiptIcon,
 } from "lucide-react";
 
@@ -28,7 +29,12 @@ export function AppSidebar() {
 	const isOverviewActive = pathname === "/";
 	const isExpenseActive = pathname.startsWith("/expense");
 	const isTrendLineActive = pathname.startsWith("/insights/trend-line");
-	const isMonthlySummaryActive = pathname.startsWith("/insights/monthly-summary");
+	const isCategoryBreakdownActive = pathname.startsWith(
+		"/insights/category-breakdown",
+	);
+	const isMonthlySummaryActive = pathname.startsWith(
+		"/insights/monthly-summary",
+	);
 
 	return (
 		<Sidebar variant="inset" collapsible="offcanvas">
@@ -87,6 +93,17 @@ export function AppSidebar() {
 								</SidebarMenuButton>
 							</SidebarMenuItem>
 							<SidebarMenuItem>
+								<SidebarMenuButton asChild isActive={isCategoryBreakdownActive}>
+									<Link
+										to="/insights/category-breakdown/$year"
+										params={{ year: currentYear }}
+									>
+										<PieChartIcon />
+										<span>Category breakdown</span>
+									</Link>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
+							<SidebarMenuItem>
 								<SidebarMenuButton asChild isActive={isMonthlySummaryActive}>
 									<Link
 										to="/insights/monthly-summary/$year"
@@ -126,6 +143,22 @@ export function AppSidebar() {
 									>
 										<ChartLineIcon />
 										<span>Trend line {currentYear}</span>
+									</Link>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
+							<SidebarMenuItem>
+								<SidebarMenuButton
+									asChild
+									isActive={
+										pathname === `/insights/category-breakdown/${currentYear}`
+									}
+								>
+									<Link
+										to="/insights/category-breakdown/$year"
+										params={{ year: currentYear }}
+									>
+										<PieChartIcon />
+										<span>Category breakdown {currentYear}</span>
 									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>

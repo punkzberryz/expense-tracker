@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { getExpenseRows } from "@/data/google-sheets";
-import { TrendLine } from "./components/trend-line";
+import { CategoryBreakdown } from "./components/category-breakdown";
 
-export const Route = createFileRoute("/insights/trend-line/$year")({
+export const Route = createFileRoute("/insights/category-breakdown/$year")({
 	loader: async ({ params }) => {
 		return getExpenseRows({ data: { year: params.year } });
 	},
@@ -17,8 +17,12 @@ function RouteComponent() {
 		<div className="p-6">
 			<div className="mb-4 flex items-center justify-between">
 				<div>
-					<h1 className="text-2xl font-semibold">Trend line · {year}</h1>
-					<p className="mt-1 text-sm text-slate-600">Monthly spend trend.</p>
+					<h1 className="text-2xl font-semibold">
+						Category breakdown · {year}
+					</h1>
+					<p className="mt-1 text-sm text-slate-600">
+						Spend totals by category.
+					</p>
 				</div>
 				<Link
 					to="/expense/$year"
@@ -28,7 +32,7 @@ function RouteComponent() {
 					View raw data
 				</Link>
 			</div>
-			<TrendLine rows={rows} year={year} />
+			<CategoryBreakdown rows={rows} year={year} />
 		</div>
 	);
 }

@@ -47,6 +47,7 @@ pnpm test
 
 - `/expense` — entry page
 - `/expense/:year` — expense table for a specific year tab
+- `/insights/category-breakdown/:year` — category totals and shares
 - `/insights/trend-line/:year` — monthly spend trend
 - `/insights/monthly-summary/:year` — monthly totals and averages
 

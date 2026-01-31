@@ -14,6 +14,7 @@ import { Route as ExpenseIndexRouteImport } from './routes/expense/index'
 import { Route as ExpenseYearRouteImport } from './routes/expense/$year'
 import { Route as InsightsTrendLineYearRouteImport } from './routes/insights/trend-line/$year'
 import { Route as InsightsMonthlySummaryYearRouteImport } from './routes/insights/monthly-summary/$year'
+import { Route as InsightsCategoryBreakdownYearRouteImport } from './routes/insights/category-breakdown/$year'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -41,11 +42,18 @@ const InsightsMonthlySummaryYearRoute =
     path: '/insights/monthly-summary/$year',
     getParentRoute: () => rootRouteImport,
   } as any)
+const InsightsCategoryBreakdownYearRoute =
+  InsightsCategoryBreakdownYearRouteImport.update({
+    id: '/insights/category-breakdown/$year',
+    path: '/insights/category-breakdown/$year',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/expense/$year': typeof ExpenseYearRoute
   '/expense/': typeof ExpenseIndexRoute
+  '/insights/category-breakdown/$year': typeof InsightsCategoryBreakdownYearRoute
   '/insights/monthly-summary/$year': typeof InsightsMonthlySummaryYearRoute
   '/insights/trend-line/$year': typeof InsightsTrendLineYearRoute
 }
@@ -53,6 +61,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/expense/$year': typeof ExpenseYearRoute
   '/expense': typeof ExpenseIndexRoute
+  '/insights/category-breakdown/$year': typeof InsightsCategoryBreakdownYearRoute
   '/insights/monthly-summary/$year': typeof InsightsMonthlySummaryYearRoute
   '/insights/trend-line/$year': typeof InsightsTrendLineYearRoute
 }
@@ -61,6 +70,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/expense/$year': typeof ExpenseYearRoute
   '/expense/': typeof ExpenseIndexRoute
+  '/insights/category-breakdown/$year': typeof InsightsCategoryBreakdownYearRoute
   '/insights/monthly-summary/$year': typeof InsightsMonthlySummaryYearRoute
   '/insights/trend-line/$year': typeof InsightsTrendLineYearRoute
 }
@@ -70,6 +80,7 @@ export interface FileRouteTypes {
     | '/'
     | '/expense/$year'
     | '/expense/'
+    | '/insights/category-breakdown/$year'
     | '/insights/monthly-summary/$year'
     | '/insights/trend-line/$year'
   fileRoutesByTo: FileRoutesByTo
@@ -77,6 +88,7 @@ export interface FileRouteTypes {
     | '/'
     | '/expense/$year'
     | '/expense'
+    | '/insights/category-breakdown/$year'
     | '/insights/monthly-summary/$year'
     | '/insights/trend-line/$year'
   id:
@@ -84,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/expense/$year'
     | '/expense/'
+    | '/insights/category-breakdown/$year'
     | '/insights/monthly-summary/$year'
     | '/insights/trend-line/$year'
   fileRoutesById: FileRoutesById
@@ -92,6 +105,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ExpenseYearRoute: typeof ExpenseYearRoute
   ExpenseIndexRoute: typeof ExpenseIndexRoute
+  InsightsCategoryBreakdownYearRoute: typeof InsightsCategoryBreakdownYearRoute
   InsightsMonthlySummaryYearRoute: typeof InsightsMonthlySummaryYearRoute
   InsightsTrendLineYearRoute: typeof InsightsTrendLineYearRoute
 }
@@ -133,6 +147,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InsightsMonthlySummaryYearRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/insights/category-breakdown/$year': {
+      id: '/insights/category-breakdown/$year'
+      path: '/insights/category-breakdown/$year'
+      fullPath: '/insights/category-breakdown/$year'
+      preLoaderRoute: typeof InsightsCategoryBreakdownYearRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -140,6 +161,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExpenseYearRoute: ExpenseYearRoute,
   ExpenseIndexRoute: ExpenseIndexRoute,
+  InsightsCategoryBreakdownYearRoute: InsightsCategoryBreakdownYearRoute,
   InsightsMonthlySummaryYearRoute: InsightsMonthlySummaryYearRoute,
   InsightsTrendLineYearRoute: InsightsTrendLineYearRoute,
 }
