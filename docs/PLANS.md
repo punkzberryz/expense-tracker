@@ -26,9 +26,14 @@
 - MVP insights
   - Validate chart data accuracy against the sheet.
 - Insight rules
-  - Add top categories and monthly total spend insights.
   - Define any anomaly/delta rules if needed later.
-- [ ] Add insight cards for top categories and monthly total spend.
+- Feature ideas
+  - Add insight cards for biggest MoM change, new top category, and largest single purchase.
+  - Flag anomalous days/categories (2–3× above recent average).
+  - Add budget targets with over/under indicators.
+  - Add merchant view (top merchants, repeat merchants, fastest-growing spend).
+  - Add comparison modes (YTD vs last year, last 3 months vs prior 3 months).
+  - Add tag/note filters (travel, subscriptions, one-off).
 
 ### Done
 
@@ -39,6 +44,8 @@
   - Implemented trend line view.
   - Implemented monthly summary view.
   - Implemented category breakdown view.
+- Insight rules
+  - Added top categories and monthly total spend insights.
 
 ## Backlog (optional)
 
