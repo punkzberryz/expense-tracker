@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
 import type { ExpenseRow } from "@/data/google-sheets";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency, parseYearMonth } from "@/lib/format";
 import {
 	ChartContainer,
 	ChartTooltip,
@@ -35,14 +35,6 @@ const percentFormatter = new Intl.NumberFormat("en-US", {
 	style: "percent",
 	maximumFractionDigits: 1,
 });
-
-const parseYearMonth = (value: string) => {
-	if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
-	const [year, month] = value.split("-");
-	const monthIndex = Number(month) - 1;
-	if (monthIndex < 0 || monthIndex > 11) return null;
-	return { year, monthIndex };
-};
 
 type MonthlySummaryProps = {
 	rows: ExpenseRow[];

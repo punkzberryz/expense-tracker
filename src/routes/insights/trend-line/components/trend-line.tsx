@@ -1,13 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import {
-  Bar,
-  ComposedChart,
-  Line,
-  LineChart,
-  type TooltipProps,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { useMemo, useState } from "react";
+import { Bar, ComposedChart, Line, LineChart, XAxis, YAxis } from "recharts";
 import { formatCurrency } from "@/lib/format";
 import type { ExpenseRow } from "@/data/google-sheets";
 import {
@@ -17,10 +9,10 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import type {
-  NameType,
-  ValueType,
-} from "recharts/types/component/DefaultTooltipContent";
+import {
+  DailyPurchasePanel,
+  DailyTooltipTracker,
+} from "./daily-tooltip-tracker";
 
 const MONTH_LABELS = [
   "Jan",
@@ -268,61 +260,3 @@ export function TrendLine({ rows, year }: TrendLineProps) {
     </div>
   );
 }
-
-const DailyTooltipTracker = ({
-  active,
-  payload,
-  onHover,
-}: TooltipProps<ValueType, NameType> & {
-  onHover: (date: string | null) => void;
-}) => {
-  useEffect(() => {
-    if (active && payload && payload.length) {
-      const date = String(payload[0]?.payload?.date ?? "");
-      onHover(date || null);
-    }
-  }, [active, payload, onHover]);
-  return null;
-};
-
-const DailyPurchasePanel = ({
-  date,
-  rows,
-}: {
-  date: string | null;
-  rows: ExpenseRow[];
-}) => {
-  if (!date) {
-    return (
-      <div className="mt-3 rounded-md border border-slate-200 bg-white p-3 text-xs text-slate-500">
-        Hover a bar to see purchases for that day.
-      </div>
-    );
-  }
-
-  return (
-    <div className="mt-3 rounded-md border border-slate-200 bg-white p-3 text-xs text-slate-600">
-      <div className="font-semibold text-slate-900">
-        {formatShortDate(date)}
-      </div>
-      {rows.length === 0 ? (
-        <div className="mt-2 text-slate-500">No purchases recorded.</div>
-      ) : (
-        <div className="mt-2 space-y-1">
-          {rows.map((row, index) => (
-            <div
-              key={`${row.date}-${row.name}-${index}`}
-              className="flex items-center justify-between gap-2"
-            >
-              <div className="truncate">
-                {row.name}
-                {row.category ? ` · ${row.category}` : ""}
-              </div>
-              <div className="font-medium">{formatCurrency(row.amount)}</div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
