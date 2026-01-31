@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
 import type { ExpenseRow } from "@/data/google-sheets";
-import { formatCurrency, parseYearMonth } from "@/lib/format";
+import { formatCurrency, parseYearDay } from "@/lib/format";
 import {
 	ChartContainer,
 	ChartTooltip,
@@ -16,92 +16,78 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 
-const MONTH_LABELS = [
-	"Jan",
-	"Feb",
-	"Mar",
-	"Apr",
-	"May",
-	"Jun",
-	"Jul",
-	"Aug",
-	"Sep",
-	"Oct",
-	"Nov",
-	"Dec",
-];
-
 const percentFormatter = new Intl.NumberFormat("en-US", {
 	style: "percent",
 	maximumFractionDigits: 1,
 });
 
-type MonthlySummaryProps = {
+type CategoryBreakdownProps = {
 	rows: ExpenseRow[];
 	year: string;
 };
 
-type MonthlyDatum = {
-	month: string;
+type CategoryDatum = {
+	category: string;
 	total: number;
 	count: number;
 	average: number;
 	share: number;
 };
 
-export function MonthlySummary({ rows, year }: MonthlySummaryProps) {
+export function CategoryBreakdown({ rows, year }: CategoryBreakdownProps) {
 	const {
-		monthlyData,
+		categoryData,
 		totalSpend,
-		monthsWithSpend,
 		totalTransactions,
-		peakMonthIndex,
-		averageMonthlySpend,
+		categoriesWithSpend,
+		topCategory,
 		averageTransaction,
 	} = useMemo(() => {
-		const monthlyTotals = Array.from({ length: 12 }, () => 0);
-		const monthlyCounts = Array.from({ length: 12 }, () => 0);
+		const categoryTotals = new Map<string, { total: number; count: number }>();
 		for (const row of rows) {
-			const parsed = parseYearMonth(row.date);
+			const parsed = parseYearDay(row.date);
 			if (!parsed || parsed.year !== year) continue;
-			monthlyTotals[parsed.monthIndex] += row.amount;
-			monthlyCounts[parsed.monthIndex] += 1;
+			const existing = categoryTotals.get(row.category);
+			if (existing) {
+				existing.total += row.amount;
+				existing.count += 1;
+			} else {
+				categoryTotals.set(row.category, { total: row.amount, count: 1 });
+			}
 		}
-		const totalSpend = monthlyTotals.reduce((sum, value) => sum + value, 0);
-		const totalTransactions = monthlyCounts.reduce(
-			(sum, value) => sum + value,
+
+		const totalSpend = Array.from(categoryTotals.values()).reduce(
+			(sum, entry) => sum + entry.total,
 			0,
 		);
-		const monthsWithSpend = monthlyTotals.filter((value) => value > 0).length;
-		const peakMonthIndex = totalSpend
-			? monthlyTotals.indexOf(Math.max(...monthlyTotals))
-			: -1;
-		const averageMonthlySpend = monthsWithSpend
-			? totalSpend / monthsWithSpend
-			: 0;
-		const averageTransaction = totalTransactions
-			? totalSpend / totalTransactions
-			: 0;
-		const monthlyData: MonthlyDatum[] = monthlyTotals.map((total, index) => {
-			const count = monthlyCounts[index];
-			const average = count ? total / count : 0;
-			const share = totalSpend ? total / totalSpend : 0;
+		const totalTransactions = Array.from(categoryTotals.values()).reduce(
+			(sum, entry) => sum + entry.count,
+			0,
+		);
+		const categoryData: CategoryDatum[] = Array.from(
+			categoryTotals.entries(),
+		).map(([category, entry]) => {
+			const average = entry.count ? entry.total / entry.count : 0;
+			const share = totalSpend ? entry.total / totalSpend : 0;
 			return {
-				month: MONTH_LABELS[index],
-				total: Number(total.toFixed(2)),
-				count,
+				category,
+				total: Number(entry.total.toFixed(2)),
+				count: entry.count,
 				average: Number(average.toFixed(2)),
 				share,
 			};
 		});
+		categoryData.sort((a, b) => b.total - a.total);
+
 		return {
-			monthlyData,
+			categoryData,
 			totalSpend,
-			monthsWithSpend,
 			totalTransactions,
-			peakMonthIndex,
-			averageMonthlySpend,
-			averageTransaction,
+			categoriesWithSpend: categoryData.length,
+			topCategory: categoryData[0] ?? null,
+			averageTransaction: totalTransactions
+				? totalSpend / totalTransactions
+				: 0,
 		};
 	}, [rows, year]);
 
@@ -109,46 +95,43 @@ export function MonthlySummary({ rows, year }: MonthlySummaryProps) {
 		return (
 			<div className="rounded-md border border-slate-200 bg-white p-4">
 				<h2 className="text-lg font-semibold text-slate-900">
-					Monthly summary
+					Category breakdown
 				</h2>
 				<p className="mt-2 text-sm text-slate-500">
-					No dated expenses available for this year.
+					No categorized expenses available for this year.
 				</p>
 			</div>
 		);
 	}
 
-	const peakLabel =
-		peakMonthIndex >= 0
-			? `${MONTH_LABELS[peakMonthIndex]} (${formatCurrency(
-					monthlyData[peakMonthIndex]?.total ?? 0,
-				)})`
-			: "—";
+	const topLabel = topCategory
+		? `${topCategory.category} (${formatCurrency(topCategory.total)})`
+		: "—";
 
 	return (
 		<div className="rounded-md border border-slate-200 bg-white p-4">
 			<div className="flex flex-wrap items-start justify-between gap-4">
 				<div>
 					<h2 className="text-lg font-semibold text-slate-900">
-						Monthly summary
+						Category breakdown
 					</h2>
-					<p className="text-sm text-slate-500">Monthly totals for {year}.</p>
+					<p className="text-sm text-slate-500">
+						Spend totals by category for {year}.
+					</p>
 				</div>
 				<div className="text-right text-sm text-slate-600">
 					<div>Total: {formatCurrency(totalSpend)}</div>
-					<div>Peak month: {peakLabel}</div>
+					<div>Top category: {topLabel}</div>
 				</div>
 			</div>
 
 			<div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
 				<div className="rounded-md border border-slate-200 bg-white p-3">
-					<div className="text-xs text-slate-500">Avg monthly spend</div>
+					<div className="text-xs text-slate-500">Categories</div>
 					<div className="mt-1 text-lg font-semibold text-slate-900">
-						{formatCurrency(averageMonthlySpend)}
+						{categoriesWithSpend}
 					</div>
-					<div className="text-xs text-slate-500">
-						{monthsWithSpend} active months
-					</div>
+					<div className="text-xs text-slate-500">Active categories</div>
 				</div>
 				<div className="rounded-md border border-slate-200 bg-white p-3">
 					<div className="text-xs text-slate-500">Transactions</div>
@@ -160,22 +143,24 @@ export function MonthlySummary({ rows, year }: MonthlySummaryProps) {
 					</div>
 				</div>
 				<div className="rounded-md border border-slate-200 bg-white p-3">
-					<div className="text-xs text-slate-500">Highest month</div>
+					<div className="text-xs text-slate-500">Top category</div>
 					<div className="mt-1 text-lg font-semibold text-slate-900">
-						{peakMonthIndex >= 0 ? MONTH_LABELS[peakMonthIndex] : "—"}
+						{topCategory?.category ?? "—"}
 					</div>
 					<div className="text-xs text-slate-500">
-						{peakMonthIndex >= 0
-							? formatCurrency(monthlyData[peakMonthIndex]?.total ?? 0)
-							: "—"}
+						{topCategory ? formatCurrency(topCategory.total) : "—"}
 					</div>
 				</div>
 				<div className="rounded-md border border-slate-200 bg-white p-3">
-					<div className="text-xs text-slate-500">Active months</div>
+					<div className="text-xs text-slate-500">Avg per category</div>
 					<div className="mt-1 text-lg font-semibold text-slate-900">
-						{monthsWithSpend} / 12
+						{formatCurrency(
+							categoriesWithSpend ? totalSpend / categoriesWithSpend : 0,
+						)}
 					</div>
-					<div className="text-xs text-slate-500">Months with spend</div>
+					<div className="text-xs text-slate-500">
+						Category share of total spend
+					</div>
 				</div>
 			</div>
 
@@ -184,21 +169,27 @@ export function MonthlySummary({ rows, year }: MonthlySummaryProps) {
 					config={{
 						total: { label: "Spend", color: "var(--color-chart-1)" },
 					}}
-					className="h-48 w-full"
+					className="h-72 w-full"
 				>
-					<BarChart data={monthlyData} margin={{ left: 8, right: 8 }}>
+					<BarChart
+						data={categoryData}
+						layout="vertical"
+						margin={{ left: 16, right: 16, top: 4, bottom: 4 }}
+					>
 						<XAxis
-							dataKey="month"
-							tickLine={false}
-							axisLine={false}
-							tickMargin={8}
-							className="text-xs text-slate-500"
-						/>
-						<YAxis
+							type="number"
 							tickLine={false}
 							axisLine={false}
 							tickMargin={8}
 							tickFormatter={(value) => formatCurrency(Number(value))}
+							className="text-xs text-slate-500"
+						/>
+						<YAxis
+							type="category"
+							dataKey="category"
+							axisLine={false}
+							tickLine={false}
+							width={120}
 							className="text-xs text-slate-500"
 						/>
 						<ChartTooltip
@@ -214,22 +205,24 @@ export function MonthlySummary({ rows, year }: MonthlySummaryProps) {
 							dataKey="total"
 							name="Spend"
 							fill="var(--color-total)"
-							radius={[4, 4, 0, 0]}
+							radius={[0, 4, 4, 0]}
 						/>
 					</BarChart>
 				</ChartContainer>
 			</div>
 
 			<div className="mt-6">
-				<h3 className="text-sm font-semibold text-slate-900">Month-by-month</h3>
+				<h3 className="text-sm font-semibold text-slate-900">
+					Category details
+				</h3>
 				<p className="text-xs text-slate-500">
-					Totals, transactions, and share of the annual spend.
+					Totals, transaction counts, and share of annual spend.
 				</p>
 				<div className="mt-3 rounded-md border">
 					<Table>
 						<TableHeader>
 							<TableRow>
-								<TableHead>Month</TableHead>
+								<TableHead>Category</TableHead>
 								<TableHead className="text-right">Total</TableHead>
 								<TableHead className="text-right">Transactions</TableHead>
 								<TableHead className="text-right">Avg</TableHead>
@@ -237,20 +230,20 @@ export function MonthlySummary({ rows, year }: MonthlySummaryProps) {
 							</TableRow>
 						</TableHeader>
 						<TableBody>
-							{monthlyData.map((month) => (
-								<TableRow key={month.month}>
+							{categoryData.map((category) => (
+								<TableRow key={category.category}>
 									<TableCell className="font-medium text-slate-700">
-										{month.month}
+										{category.category}
 									</TableCell>
 									<TableCell className="text-right">
-										{formatCurrency(month.total)}
+										{formatCurrency(category.total)}
 									</TableCell>
-									<TableCell className="text-right">{month.count}</TableCell>
+									<TableCell className="text-right">{category.count}</TableCell>
 									<TableCell className="text-right">
-										{formatCurrency(month.average)}
+										{formatCurrency(category.average)}
 									</TableCell>
 									<TableCell className="text-right">
-										{percentFormatter.format(month.share)}
+										{percentFormatter.format(category.share)}
 									</TableCell>
 								</TableRow>
 							))}
