@@ -56,9 +56,13 @@ const fuzzySort: SortingFn<ExpenseRow> = (rowA, rowB, columnId) => {
 
 type ExpenseTableProps = {
 	rows: ExpenseRow[];
+	emptyMessage?: string;
 };
 
-export function ExpenseTable({ rows }: ExpenseTableProps) {
+export function ExpenseTable({
+	rows,
+	emptyMessage = "No expenses found for this year.",
+}: ExpenseTableProps) {
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [globalFilter, setGlobalFilter] = useState("");
 	const [pageSizeSelection, setPageSizeSelection] = useState<number>(10);
@@ -214,7 +218,7 @@ export function ExpenseTable({ rows }: ExpenseTableProps) {
 									colSpan={columns.length}
 									className="h-24 text-center"
 								>
-									No expenses found for this year.
+									{emptyMessage}
 								</TableCell>
 							</TableRow>
 						)}
