@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { ExpenseRow } from "@/data/google-sheets";
-import { parseYearDay } from "@/lib/format";
+import { parseYearMonth } from "@/lib/format";
 
 type CategoryTotals = {
 	total: number;
@@ -27,12 +27,16 @@ export type CategoryBreakdownData = {
 export function useCategoryBreakdownData(
 	rows: ExpenseRow[],
 	year: string,
+	monthIndex?: number | null,
 ): CategoryBreakdownData {
 	return useMemo(() => {
 		const categoryTotals = new Map<string, CategoryTotals>();
 		for (const row of rows) {
-			const parsed = parseYearDay(row.date);
+			const parsed = parseYearMonth(row.date);
 			if (!parsed || parsed.year !== year) continue;
+			if (typeof monthIndex === "number" && parsed.monthIndex !== monthIndex) {
+				continue;
+			}
 			const existing = categoryTotals.get(row.category);
 			if (existing) {
 				existing.total += row.amount;
@@ -75,5 +79,5 @@ export function useCategoryBreakdownData(
 				? totalSpend / totalTransactions
 				: 0,
 		};
-	}, [rows, year]);
+	}, [rows, year, monthIndex]);
 }

@@ -3,6 +3,7 @@ import { MonthlySummaryChart } from "./monthly-summary-chart";
 import { useMonthlySummaryData } from "./monthly-summary-data";
 import { MonthlySummaryEmpty } from "./monthly-summary-empty";
 import { MonthlySummaryHeader } from "./monthly-summary-header";
+import { MonthlySummaryPieChart } from "./monthly-summary-pie-chart";
 import { MonthlySummaryStats } from "./monthly-summary-stats";
 import { MonthlySummaryTable } from "./monthly-summary-table";
 
@@ -47,6 +48,7 @@ export function MonthlySummary({ rows, year }: MonthlySummaryProps) {
 				peakMonthTotal={peakMonthTotal}
 			/>
 			<MonthlySummaryChart monthlyData={monthlyData} />
+			<MonthlySummaryPieChart rows={rows} year={year} />
 			<MonthlySummaryTable monthlyData={monthlyData} />
 		</div>
 	);
