@@ -1,4 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+	Link,
+	Outlet,
+	createFileRoute,
+	useRouterState,
+} from "@tanstack/react-router";
 import { getExpenseRows } from "@/data/google-sheets";
 import { MonthlySummary } from "./components/monthly-summary";
 
@@ -12,6 +17,16 @@ export const Route = createFileRoute("/insights/monthly-summary/$year")({
 function RouteComponent() {
 	const rows = Route.useLoaderData();
 	const { year } = Route.useParams();
+	const pathname = useRouterState({
+		select: (state) => state.location.pathname,
+	});
+	const isMonthView = pathname.startsWith(
+		`/insights/monthly-summary/${year}/`,
+	);
+
+	if (isMonthView) {
+		return <Outlet />;
+	}
 
 	return (
 		<div className="p-6">

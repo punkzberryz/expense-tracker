@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { Cell, Pie, PieChart } from "recharts";
 import type { ExpenseRow } from "@/data/google-sheets";
@@ -32,6 +32,8 @@ const PIE_COLORS = [
 type MonthlySummaryPieChartProps = {
 	rows: ExpenseRow[];
 	year: string;
+	defaultMonthIndex?: number | null;
+	showPeriodSelect?: boolean;
 };
 
 type CategoryPieDatum = {
@@ -43,8 +45,17 @@ type CategoryPieDatum = {
 export function MonthlySummaryPieChart({
 	rows,
 	year,
+	defaultMonthIndex = null,
+	showPeriodSelect = true,
 }: MonthlySummaryPieChartProps) {
-	const [selectedPeriod, setSelectedPeriod] = useState<string>("year");
+	const defaultPeriod =
+		typeof defaultMonthIndex === "number"
+			? `month-${defaultMonthIndex}`
+			: "year";
+	const [selectedPeriod, setSelectedPeriod] = useState<string>(defaultPeriod);
+	useEffect(() => {
+		setSelectedPeriod(defaultPeriod);
+	}, [defaultPeriod]);
 	const periodOptions = useMemo(
 		() => [
 			{ value: "year", label: `Year (${year})` },
@@ -55,8 +66,9 @@ export function MonthlySummaryPieChart({
 		],
 		[year],
 	);
+	const activePeriod = showPeriodSelect ? selectedPeriod : defaultPeriod;
 	const selectedOption =
-		periodOptions.find((option) => option.value === selectedPeriod) ??
+		periodOptions.find((option) => option.value === activePeriod) ??
 		periodOptions[0];
 	const monthMatch = selectedOption.value.match(/^month-(\d{1,2})$/);
 	const monthIndex = monthMatch ? Number(monthMatch[1]) : null;
@@ -104,29 +116,31 @@ export function MonthlySummaryPieChart({
 						Share of spend for {selectedOption.label}.
 					</p>
 				</div>
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="outline" size="sm" className="gap-2">
-							{selectedOption.label}
-							<ChevronDown className="size-4 text-slate-500" />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end" className="w-44">
-						<DropdownMenuRadioGroup
-							value={selectedOption.value}
-							onValueChange={setSelectedPeriod}
-						>
-							{periodOptions.map((option) => (
-								<DropdownMenuRadioItem
-									key={option.value}
-									value={option.value}
-								>
-									{option.label}
-								</DropdownMenuRadioItem>
-							))}
-						</DropdownMenuRadioGroup>
-					</DropdownMenuContent>
-				</DropdownMenu>
+				{showPeriodSelect ? (
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button variant="outline" size="sm" className="gap-2">
+								{selectedOption.label}
+								<ChevronDown className="size-4 text-slate-500" />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end" className="w-44">
+							<DropdownMenuRadioGroup
+								value={selectedOption.value}
+								onValueChange={setSelectedPeriod}
+							>
+								{periodOptions.map((option) => (
+									<DropdownMenuRadioItem
+										key={option.value}
+										value={option.value}
+									>
+										{option.label}
+									</DropdownMenuRadioItem>
+								))}
+							</DropdownMenuRadioGroup>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				) : null}
 			</div>
 			<div className="mt-3">
 				{hasData ? (

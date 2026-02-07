@@ -49,7 +49,7 @@ export function MonthlySummary({ rows, year }: MonthlySummaryProps) {
 			/>
 			<MonthlySummaryChart monthlyData={monthlyData} />
 			<MonthlySummaryPieChart rows={rows} year={year} />
-			<MonthlySummaryTable monthlyData={monthlyData} />
+			<MonthlySummaryTable monthlyData={monthlyData} year={year} />
 		</div>
 	);
 }

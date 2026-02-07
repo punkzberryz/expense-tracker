@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import type { MonthlyDatum } from "./monthly-summary-data";
 import { formatCurrency } from "@/lib/format";
 import {
@@ -16,9 +17,13 @@ const percentFormatter = new Intl.NumberFormat("en-US", {
 
 type MonthlySummaryTableProps = {
 	monthlyData: MonthlyDatum[];
+	year: string;
 };
 
-export function MonthlySummaryTable({ monthlyData }: MonthlySummaryTableProps) {
+export function MonthlySummaryTable({
+	monthlyData,
+	year,
+}: MonthlySummaryTableProps) {
 	return (
 		<div className="mt-6">
 			<h3 className="text-sm font-semibold text-slate-900">Month-by-month</h3>
@@ -37,23 +42,32 @@ export function MonthlySummaryTable({ monthlyData }: MonthlySummaryTableProps) {
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{monthlyData.map((month) => (
-							<TableRow key={month.month}>
-								<TableCell className="font-medium text-slate-700">
-									{month.month}
-								</TableCell>
-								<TableCell className="text-right">
-									{formatCurrency(month.total)}
-								</TableCell>
-								<TableCell className="text-right">{month.count}</TableCell>
-								<TableCell className="text-right">
-									{formatCurrency(month.average)}
-								</TableCell>
-								<TableCell className="text-right">
-									{percentFormatter.format(month.share)}
-								</TableCell>
-							</TableRow>
-						))}
+						{monthlyData.map((month, index) => {
+							const monthParam = String(index + 1).padStart(2, "0");
+							return (
+								<TableRow key={month.month}>
+									<TableCell className="font-medium text-slate-700">
+										<Link
+											to="/insights/monthly-summary/$year/$month"
+											params={{ year, month: monthParam }}
+											className="text-blue-600 hover:underline"
+										>
+											{month.month}
+										</Link>
+									</TableCell>
+									<TableCell className="text-right">
+										{formatCurrency(month.total)}
+									</TableCell>
+									<TableCell className="text-right">{month.count}</TableCell>
+									<TableCell className="text-right">
+										{formatCurrency(month.average)}
+									</TableCell>
+									<TableCell className="text-right">
+										{percentFormatter.format(month.share)}
+									</TableCell>
+								</TableRow>
+							);
+						})}
 					</TableBody>
 				</Table>
 			</div>

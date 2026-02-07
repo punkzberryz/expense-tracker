@@ -50,6 +50,7 @@ pnpm test
 - `/insights/category-breakdown/:year` — category totals and shares
 - `/insights/trend-line/:year` — monthly spend trend
 - `/insights/monthly-summary/:year` — monthly totals and averages
+- `/insights/monthly-summary/:year/:month` — category breakdown for a specific month
 
 ## Notes
 
