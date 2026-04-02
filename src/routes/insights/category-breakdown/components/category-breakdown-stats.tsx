@@ -1,6 +1,11 @@
 import { formatCurrency } from "@/lib/format";
 import type { CategoryDatum } from "./category-breakdown-data";
 
+const percentFormatter = new Intl.NumberFormat("en-US", {
+	style: "percent",
+	maximumFractionDigits: 1,
+});
+
 type CategoryBreakdownStatsProps = {
 	totalSpend: number;
 	totalTransactions: number;
@@ -17,43 +22,55 @@ export function CategoryBreakdownStats({
 	averageTransaction,
 }: CategoryBreakdownStatsProps) {
 	return (
-		<div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-			<div className="rounded-md border border-slate-200 bg-white p-3">
-				<div className="text-xs text-slate-500">Categories</div>
-				<div className="mt-1 text-lg font-semibold text-slate-900">
-					{categoriesWithSpend}
-				</div>
-				<div className="text-xs text-slate-500">Active categories</div>
-			</div>
-			<div className="rounded-md border border-slate-200 bg-white p-3">
-				<div className="text-xs text-slate-500">Transactions</div>
-				<div className="mt-1 text-lg font-semibold text-slate-900">
-					{totalTransactions}
-				</div>
-				<div className="text-xs text-slate-500">
-					Avg {formatCurrency(averageTransaction)} per purchase
-				</div>
-			</div>
-			<div className="rounded-md border border-slate-200 bg-white p-3">
-				<div className="text-xs text-slate-500">Top category</div>
-				<div className="mt-1 text-lg font-semibold text-slate-900">
-					{topCategory?.category ?? "—"}
-				</div>
-				<div className="text-xs text-slate-500">
-					{topCategory ? formatCurrency(topCategory.total) : "—"}
-				</div>
-			</div>
-			<div className="rounded-md border border-slate-200 bg-white p-3">
-				<div className="text-xs text-slate-500">Avg per category</div>
-				<div className="mt-1 text-lg font-semibold text-slate-900">
-					{formatCurrency(
-						categoriesWithSpend ? totalSpend / categoriesWithSpend : 0,
-					)}
-				</div>
-				<div className="text-xs text-slate-500">
-					Category share of total spend
-				</div>
-			</div>
+		<div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+			<StatCard
+				label="Active categories"
+				value={String(categoriesWithSpend)}
+				description="Categories with recorded spend this year."
+			/>
+			<StatCard
+				label="Transactions"
+				value={String(totalTransactions)}
+				description={`Average purchase ${formatCurrency(averageTransaction)}.`}
+			/>
+			<StatCard
+				label="Leading category"
+				value={topCategory?.category ?? "No data"}
+				description={
+					topCategory
+						? `${formatCurrency(topCategory.total)} / ${percentFormatter.format(topCategory.share)} of spend.`
+						: "No category totals available yet."
+				}
+			/>
+			<StatCard
+				label="Average per category"
+				value={formatCurrency(
+					categoriesWithSpend ? totalSpend / categoriesWithSpend : 0,
+				)}
+				description="Typical spend allocated to each active category."
+			/>
+		</div>
+	);
+}
+
+function StatCard({
+	label,
+	value,
+	description,
+}: {
+	label: string;
+	value: string;
+	description: string;
+}) {
+	return (
+		<div className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm">
+			<p className="text-xs font-medium uppercase tracking-[0.16em] text-slate-500">
+				{label}
+			</p>
+			<p className="mt-3 text-2xl font-semibold tracking-tight text-slate-950">
+				{value}
+			</p>
+			<p className="mt-2 text-sm leading-5 text-slate-600">{description}</p>
 		</div>
 	);
 }
