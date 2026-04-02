@@ -7,6 +7,7 @@ import {
 	getGroupedCategoryItemData,
 	getHighlightedCategoryItemData,
 } from "./category-breakdown/components/category-breakdown-data";
+import { getMonthlySummaryMonthDetailData } from "./monthly-summary/components/monthly-summary-month-detail-data";
 import { getMonthlySummaryData } from "./monthly-summary/components/monthly-summary-data";
 import { getTrendLineData } from "./trend-line/components/trend-line-data";
 
@@ -129,6 +130,39 @@ describe("insight data aggregations", () => {
 				share: 12.3 / 558.05,
 			},
 		]);
+	});
+
+	it("returns empty monthly summary metrics when the selected year has no dated spend", () => {
+		const result = getMonthlySummaryData(rows, "2024");
+
+		expect(result.totalSpend).toBe(0);
+		expect(result.monthsWithSpend).toBe(0);
+		expect(result.totalTransactions).toBe(0);
+		expect(result.peakMonthIndex).toBe(-1);
+		expect(result.averageMonthlySpend).toBe(0);
+		expect(result.averageTransaction).toBe(0);
+		expect(result.monthlyData.every((month) => month.total === 0)).toBe(true);
+	});
+
+	it("builds month detail metrics for the monthly summary drilldown page", () => {
+		const result = getMonthlySummaryMonthDetailData(rows, "2026", 1);
+
+		expect(result.totalSpend).toBe(515);
+		expect(result.totalTransactions).toBe(2);
+		expect(result.activeDays).toBe(2);
+		expect(result.averageTransaction).toBe(257.5);
+		expect(result.averageDailySpend).toBe(257.5);
+		expect(result.shareOfYear).toBe(515 / 558.05);
+		expect(result.topCategory).toEqual({
+			category: "Housing",
+			total: 500,
+			count: 1,
+			average: 500,
+			share: 500 / 515,
+		});
+		expect(result.largestExpense?.name).toBe("Rent");
+		expect(result.latestExpense?.date).toBe("2026-02-28");
+		expect(result.monthRows).toHaveLength(2);
 	});
 
 	it("builds category breakdown data for full-year and month-filtered views", () => {

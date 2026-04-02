@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { Cell, Pie, PieChart } from "recharts";
 import type { ExpenseRow } from "@/data/google-sheets";
-import { formatCurrency } from "@/lib/format";
+import { Button } from "@/components/ui/button";
 import {
 	ChartContainer,
 	ChartLegend,
@@ -10,7 +10,6 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -18,6 +17,8 @@ import {
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { formatCurrency } from "@/lib/format";
+import { cn } from "@/lib/utils";
 import { useCategoryBreakdownData } from "@/routes/insights/category-breakdown/components/category-breakdown-data";
 import { MONTH_LABELS } from "./monthly-summary-data";
 
@@ -34,6 +35,7 @@ type MonthlySummaryPieChartProps = {
 	year: string;
 	defaultMonthIndex?: number | null;
 	showPeriodSelect?: boolean;
+	framed?: boolean;
 };
 
 type CategoryPieDatum = {
@@ -47,15 +49,18 @@ export function MonthlySummaryPieChart({
 	year,
 	defaultMonthIndex = null,
 	showPeriodSelect = true,
+	framed = true,
 }: MonthlySummaryPieChartProps) {
 	const defaultPeriod =
 		typeof defaultMonthIndex === "number"
 			? `month-${defaultMonthIndex}`
 			: "year";
 	const [selectedPeriod, setSelectedPeriod] = useState<string>(defaultPeriod);
+
 	useEffect(() => {
 		setSelectedPeriod(defaultPeriod);
 	}, [defaultPeriod]);
+
 	const periodOptions = useMemo(
 		() => [
 			{ value: "year", label: `Year (${year})` },
@@ -89,6 +94,7 @@ export function MonthlySummaryPieChart({
 			value: category.total,
 		}));
 	const hasData = pieData.length > 0;
+	const topSlices = pieData.slice(0, 3);
 
 	const config = Object.fromEntries(
 		pieData.map((month, index) => [
@@ -106,13 +112,17 @@ export function MonthlySummaryPieChart({
 	}));
 
 	return (
-		<div className="mt-6">
+		<section
+			className={cn(
+				framed && "rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm",
+			)}
+		>
 			<div className="flex flex-wrap items-start justify-between gap-3">
 				<div>
-					<h3 className="text-sm font-semibold text-slate-900">
+					<h3 className="text-lg font-semibold text-slate-900">
 						Category breakdown
 					</h3>
-					<p className="text-xs text-slate-500">
+					<p className="mt-1 text-sm leading-6 text-slate-600">
 						Share of spend for {selectedOption.label}.
 					</p>
 				</div>
@@ -142,47 +152,62 @@ export function MonthlySummaryPieChart({
 					</DropdownMenu>
 				) : null}
 			</div>
-			<div className="mt-3">
+			<div className="mt-5">
 				{hasData ? (
-					<ChartContainer config={config} className="h-64 w-full">
-						<PieChart margin={{ top: 8, bottom: 8 }}>
-							<ChartTooltip
-								content={
-									<ChartTooltipContent
-										indicator="dot"
-										formatter={(value) =>
-											formatCurrency(Number(value))
-										}
-									/>
-								}
-							/>
-							<ChartLegend
-								payload={legendPayload}
-								content={<ChartLegendContent config={config} />}
-							/>
-							<Pie
-								data={pieData}
-								dataKey="value"
-								nameKey="label"
-								innerRadius={56}
-								outerRadius={90}
-								paddingAngle={2}
-							>
-								{pieData.map((entry) => (
-									<Cell
-										key={entry.key}
-										fill={`var(--color-${entry.key})`}
-									/>
-								))}
-							</Pie>
-						</PieChart>
-					</ChartContainer>
+					<div className="grid gap-5">
+						<ChartContainer config={config} className="h-64 w-full">
+							<PieChart margin={{ top: 8, bottom: 8 }}>
+								<ChartTooltip
+									content={
+										<ChartTooltipContent
+											indicator="dot"
+											formatter={(value) => formatCurrency(Number(value))}
+										/>
+									}
+								/>
+								<ChartLegend
+									payload={legendPayload}
+									content={<ChartLegendContent config={config} />}
+								/>
+								<Pie
+									data={pieData}
+									dataKey="value"
+									nameKey="label"
+									innerRadius={56}
+									outerRadius={90}
+									paddingAngle={2}
+								>
+									{pieData.map((entry) => (
+										<Cell
+											key={entry.key}
+											fill={`var(--color-${entry.key})`}
+										/>
+									))}
+								</Pie>
+							</PieChart>
+						</ChartContainer>
+						<div className="grid gap-2 sm:grid-cols-3">
+							{topSlices.map((slice) => (
+								<div
+									key={slice.key}
+									className="rounded-2xl border border-slate-200 bg-slate-50 p-3"
+								>
+									<div className="text-xs font-medium uppercase tracking-[0.16em] text-slate-500">
+										{slice.label}
+									</div>
+									<div className="mt-2 text-lg font-semibold text-slate-950">
+										{formatCurrency(slice.value)}
+									</div>
+								</div>
+							))}
+						</div>
+					</div>
 				) : (
-					<div className="rounded-md border border-dashed border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+					<div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
 						No categorized expenses for this period.
 					</div>
 				)}
 			</div>
-		</div>
+		</section>
 	);
 }

@@ -8,9 +8,13 @@ export function MonthlySummaryEmpty({
 	description,
 }: MonthlySummaryEmptyProps) {
 	return (
-		<div className="rounded-md border border-slate-200 bg-white p-4">
-			<h2 className="text-lg font-semibold text-slate-900">{title}</h2>
-			<p className="mt-2 text-sm text-slate-500">{description}</p>
-		</div>
+		<section className="rounded-[28px] border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-emerald-50 p-6 shadow-sm">
+			<div className="max-w-2xl">
+				<h2 className="text-2xl font-semibold tracking-tight text-slate-950">
+					{title}
+				</h2>
+				<p className="mt-3 text-sm leading-6 text-slate-600">{description}</p>
+			</div>
+		</section>
 	);
 }

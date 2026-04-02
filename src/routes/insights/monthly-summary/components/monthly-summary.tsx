@@ -32,10 +32,12 @@ export function MonthlySummary({ rows, year }: MonthlySummaryProps) {
 	const peakMonthTotal = monthlyData[peakMonthIndex]?.total ?? 0;
 
 	return (
-		<div className="rounded-md border border-slate-200 bg-white p-4">
+		<div className="space-y-6">
 			<MonthlySummaryHeader
 				year={year}
 				totalSpend={totalSpend}
+				monthsWithSpend={monthsWithSpend}
+				averageMonthlySpend={averageMonthlySpend}
 				peakMonthIndex={peakMonthIndex}
 				peakMonthTotal={peakMonthTotal}
 			/>
@@ -47,9 +49,18 @@ export function MonthlySummary({ rows, year }: MonthlySummaryProps) {
 				peakMonthIndex={peakMonthIndex}
 				peakMonthTotal={peakMonthTotal}
 			/>
-			<MonthlySummaryChart monthlyData={monthlyData} />
-			<MonthlySummaryPieChart rows={rows} year={year} />
-			<MonthlySummaryTable monthlyData={monthlyData} year={year} />
+			<div className="grid gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,0.95fr)]">
+				<MonthlySummaryChart
+					monthlyData={monthlyData}
+					totalSpend={totalSpend}
+				/>
+				<MonthlySummaryPieChart rows={rows} year={year} />
+			</div>
+			<MonthlySummaryTable
+				monthlyData={monthlyData}
+				year={year}
+				peakMonthIndex={peakMonthIndex}
+			/>
 		</div>
 	);
 }

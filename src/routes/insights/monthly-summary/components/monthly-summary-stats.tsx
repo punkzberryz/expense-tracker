@@ -18,41 +18,56 @@ export function MonthlySummaryStats({
 	peakMonthIndex,
 	peakMonthTotal,
 }: MonthlySummaryStatsProps) {
+	const quietMonths = 12 - monthsWithSpend;
+
 	return (
-		<div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-			<div className="rounded-md border border-slate-200 bg-white p-3">
-				<div className="text-xs text-slate-500">Avg monthly spend</div>
-				<div className="mt-1 text-lg font-semibold text-slate-900">
+		<div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+			<div className="rounded-[24px] border border-emerald-200 bg-emerald-50/70 p-4 shadow-sm">
+				<div className="text-xs font-medium uppercase tracking-[0.16em] text-emerald-700">
+					Active-month average
+				</div>
+				<div className="mt-3 text-2xl font-semibold tracking-tight text-slate-950">
 					{formatCurrency(averageMonthlySpend)}
 				</div>
-				<div className="text-xs text-slate-500">
-					{monthsWithSpend} active months
+				<div className="mt-2 text-sm text-slate-600">
+					Spread across {monthsWithSpend} active month
+					{monthsWithSpend === 1 ? "" : "s"}.
 				</div>
 			</div>
-			<div className="rounded-md border border-slate-200 bg-white p-3">
-				<div className="text-xs text-slate-500">Transactions</div>
-				<div className="mt-1 text-lg font-semibold text-slate-900">
+			<div className="rounded-[24px] border border-sky-200 bg-sky-50/70 p-4 shadow-sm">
+				<div className="text-xs font-medium uppercase tracking-[0.16em] text-sky-700">
+					Transactions
+				</div>
+				<div className="mt-3 text-2xl font-semibold tracking-tight text-slate-950">
 					{totalTransactions}
 				</div>
-				<div className="text-xs text-slate-500">
-					Avg {formatCurrency(averageTransaction)} per purchase
+				<div className="mt-2 text-sm text-slate-600">
+					Average {formatCurrency(averageTransaction)} per purchase.
 				</div>
 			</div>
-			<div className="rounded-md border border-slate-200 bg-white p-3">
-				<div className="text-xs text-slate-500">Highest month</div>
-				<div className="mt-1 text-lg font-semibold text-slate-900">
-					{peakMonthIndex >= 0 ? MONTH_LABELS[peakMonthIndex] : "—"}
+			<div className="rounded-[24px] border border-amber-200 bg-amber-50/80 p-4 shadow-sm">
+				<div className="text-xs font-medium uppercase tracking-[0.16em] text-amber-700">
+					Highest month
 				</div>
-				<div className="text-xs text-slate-500">
-					{peakMonthIndex >= 0 ? formatCurrency(peakMonthTotal) : "—"}
+				<div className="mt-3 text-2xl font-semibold tracking-tight text-slate-950">
+					{peakMonthIndex >= 0 ? MONTH_LABELS[peakMonthIndex] : "No data"}
+				</div>
+				<div className="mt-2 text-sm text-slate-600">
+					{peakMonthIndex >= 0
+						? `${formatCurrency(peakMonthTotal)} recorded in the busiest month.`
+						: "A peak month will appear once there is data."}
 				</div>
 			</div>
-			<div className="rounded-md border border-slate-200 bg-white p-3">
-				<div className="text-xs text-slate-500">Active months</div>
-				<div className="mt-1 text-lg font-semibold text-slate-900">
-					{monthsWithSpend} / 12
+			<div className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm">
+				<div className="text-xs font-medium uppercase tracking-[0.16em] text-slate-500">
+					Quiet months
 				</div>
-				<div className="text-xs text-slate-500">Months with spend</div>
+				<div className="mt-3 text-2xl font-semibold tracking-tight text-slate-950">
+					{quietMonths}
+				</div>
+				<div className="mt-2 text-sm text-slate-600">
+					Months with no dated spend out of the full 12-month view.
+				</div>
 			</div>
 		</div>
 	);
