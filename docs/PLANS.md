@@ -24,7 +24,7 @@
 ### Todo
 
 - MVP insights
-  - Validate chart data accuracy against the sheet.
+  - Spot-check chart totals against the live Google Sheet before release.
 - Insight rules
   - Define any anomaly/delta rules if needed later.
 - Feature ideas
@@ -44,6 +44,7 @@
   - Implemented trend line view.
   - Implemented monthly summary view.
   - Implemented category breakdown view.
+  - Added automated coverage for trend line, monthly summary, and category breakdown aggregations.
 - Insight rules
   - Added top categories and monthly total spend insights.
 

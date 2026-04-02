@@ -45,6 +45,8 @@ pnpm test
 
 ## Routes
 
+- `/` - dashboard overview
+
 - `/expense` — entry page
 - `/expense/:year` — expense table for a specific year tab
 - `/insights/category-breakdown/:year` — category totals and shares

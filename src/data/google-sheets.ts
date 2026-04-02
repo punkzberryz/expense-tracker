@@ -45,6 +45,10 @@ const getSheetId = () => {
 	if (!sheetId) throw new Error("Missing GOOGLE_SHEET_ID.");
 	return sheetId;
 };
+
+export const buildGoogleSheetUrl = (sheetId: string) =>
+	`https://docs.google.com/spreadsheets/d/${sheetId}/edit`;
+
 const getPrivateKey = () => {
 	if (process.env.GOOGLE_SHEETS_PRIVATE_KEY_B64) {
 		return Buffer.from(process.env.GOOGLE_SHEETS_PRIVATE_KEY_B64, "base64")
@@ -190,4 +194,8 @@ export const getExpenseRows = createServerFn({ method: "GET" })
 
 export const getAvailableYears = createServerFn({ method: "GET" }).handler(
 	async () => fetchAvailableYears(),
+);
+
+export const getGoogleSheetUrl = createServerFn({ method: "GET" }).handler(
+	async () => buildGoogleSheetUrl(getSheetId()),
 );
