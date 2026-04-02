@@ -28,10 +28,15 @@ type DailyChartDatum = {
 export type TrendLineData = {
 	monthlyTotals: number[];
 	totalSpend: number;
+	monthsWithSpend: number;
+	averageActiveMonthSpend: number;
 	peakMonthIndex: number;
 	monthlyChartData: { month: string; spend: number }[];
 	dailyChartData: DailyChartDatum[];
 	dailyRowsByDate: Map<string, ExpenseRow[]>;
+	highestDailySpend: number;
+	highestDailySpendDate: string | null;
+	lastActiveDate: string | null;
 };
 
 export function getTrendLineData(
@@ -41,11 +46,13 @@ export function getTrendLineData(
 	const monthlyTotals = Array.from({ length: 12 }, () => 0);
 	const dailyTotals = new Map<string, number>();
 	const dailyRowsByDate = new Map<string, ExpenseRow[]>();
+
 	for (const row of rows) {
 		const parsed = parseYearMonth(row.date);
 		if (parsed && parsed.year === year) {
 			monthlyTotals[parsed.monthIndex] += row.amount;
 		}
+
 		const dayParsed = parseYearDay(row.date);
 		if (dayParsed && dayParsed.year === year) {
 			const dateKey = row.date;
@@ -58,7 +65,12 @@ export function getTrendLineData(
 			}
 		}
 	}
+
 	const totalSpend = monthlyTotals.reduce((sum, value) => sum + value, 0);
+	const monthsWithSpend = monthlyTotals.filter((value) => value > 0).length;
+	const averageActiveMonthSpend = monthsWithSpend
+		? Number((totalSpend / monthsWithSpend).toFixed(2))
+		: 0;
 	const peakMonthIndex = totalSpend
 		? monthlyTotals.indexOf(Math.max(...monthlyTotals))
 		: -1;
@@ -77,14 +89,24 @@ export function getTrendLineData(
 			});
 			return acc;
 		}, []);
+	const highestDailySpendEntry = dailyChartData.reduce<DailyChartDatum | null>(
+		(highest, entry) =>
+			!highest || entry.daily > highest.daily ? entry : highest,
+		null,
+	);
 
 	return {
 		monthlyTotals,
 		totalSpend,
+		monthsWithSpend,
+		averageActiveMonthSpend,
 		peakMonthIndex,
 		monthlyChartData,
 		dailyChartData,
 		dailyRowsByDate,
+		highestDailySpend: highestDailySpendEntry?.daily ?? 0,
+		highestDailySpendDate: highestDailySpendEntry?.date ?? null,
+		lastActiveDate: dailyChartData.at(-1)?.date ?? null,
 	};
 }
 

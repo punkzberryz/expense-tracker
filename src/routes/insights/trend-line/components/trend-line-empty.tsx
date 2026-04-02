@@ -8,9 +8,13 @@ export function TrendLineEmpty({
 	description,
 }: TrendLineEmptyProps) {
 	return (
-		<div className="rounded-md border border-slate-200 bg-white p-4">
-			<h2 className="text-lg font-semibold text-slate-900">{title}</h2>
-			<p className="mt-2 text-sm text-slate-500">{description}</p>
-		</div>
+		<section className="rounded-[28px] border border-dashed border-slate-300 bg-white/80 p-8 shadow-sm backdrop-blur">
+			<h2 className="text-xl font-semibold tracking-tight text-slate-950">
+				{title}
+			</h2>
+			<p className="mt-3 max-w-xl text-sm leading-6 text-slate-600">
+				{description}
+			</p>
+		</section>
 	);
 }

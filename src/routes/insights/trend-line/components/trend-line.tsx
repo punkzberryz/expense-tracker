@@ -14,32 +14,47 @@ export function TrendLine({ rows, year }: TrendLineProps) {
 	const {
 		monthlyTotals,
 		totalSpend,
+		monthsWithSpend,
+		averageActiveMonthSpend,
 		peakMonthIndex,
 		monthlyChartData,
 		dailyChartData,
 		dailyRowsByDate,
+		highestDailySpend,
+		highestDailySpendDate,
+		lastActiveDate,
 	} = useTrendLineData(rows, year);
 
 	if (totalSpend <= 0) {
 		return (
-			<TrendLineEmpty description="No dated expenses available for this year." />
+			<TrendLineEmpty description="No dated expenses are available for this year yet." />
 		);
 	}
 
 	const peakMonthTotal = monthlyTotals[peakMonthIndex] ?? 0;
 
 	return (
-		<div className="rounded-md border border-slate-200 bg-white p-4">
+		<div className="space-y-6">
 			<TrendLineHeader
 				year={year}
 				totalSpend={totalSpend}
+				monthsWithSpend={monthsWithSpend}
+				averageActiveMonthSpend={averageActiveMonthSpend}
 				peakMonthIndex={peakMonthIndex}
 				peakMonthTotal={peakMonthTotal}
+				highestDailySpend={highestDailySpend}
+				highestDailySpendDate={highestDailySpendDate}
 			/>
-			<TrendLineMonthlyChart monthlyChartData={monthlyChartData} />
+			<TrendLineMonthlyChart
+				monthlyChartData={monthlyChartData}
+				averageActiveMonthSpend={averageActiveMonthSpend}
+				monthsWithSpend={monthsWithSpend}
+				lastActiveDate={lastActiveDate}
+			/>
 			<TrendLineDailySection
 				dailyChartData={dailyChartData}
 				dailyRowsByDate={dailyRowsByDate}
+				lastActiveDate={lastActiveDate}
 			/>
 		</div>
 	);

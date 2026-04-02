@@ -72,10 +72,15 @@ describe("insight data aggregations", () => {
 		const result = getTrendLineData(rows, "2026");
 
 		expect(result.totalSpend).toBe(558.05);
+		expect(result.monthsWithSpend).toBe(3);
+		expect(result.averageActiveMonthSpend).toBe(186.02);
 		expect(result.peakMonthIndex).toBe(1);
 		expect(result.monthlyTotals[0]).toBe(30.75);
 		expect(result.monthlyTotals[1]).toBe(515);
 		expect(result.monthlyTotals[2]).toBe(12.3);
+		expect(result.highestDailySpend).toBe(500);
+		expect(result.highestDailySpendDate).toBe("2026-02-28");
+		expect(result.lastActiveDate).toBe("2026-03-02");
 		expect(result.monthlyChartData.slice(0, 3)).toEqual([
 			{ month: "Jan", spend: 30.75 },
 			{ month: "Feb", spend: 515 },
